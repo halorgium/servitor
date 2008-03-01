@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'daemons'
+
+code = File.dirname(__FILE__) + "/../lib/scripts/native.rb"
+options = {
+  :app_name   => "git-hosting-daemon", 
+  :ARGV       => ARGV,
+  :dir_mode   => :normal, 
+  :dir        => File.dirname(__FILE__) + '/../log',
+  :multiple   => false, 
+  :backtrace  => true,
+  :monitor    => false
+}
+Daemons.run(code, options)

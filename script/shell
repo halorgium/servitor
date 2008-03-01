@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'logger'
+logger = Logger.new(File.dirname(__FILE__) + "/../debug.log")
+
+logger.debug "---- START ----"
+logger.debug "ENV: #{ENV.inspect}"
+logger.debug "ARGV: #{ARGV.inspect}"
+logger.debug "---- END ----"
+
+command, repo = ENV["SSH_ORIGINAL_COMMAND"].split(/ /)
+access = case command
+when 'git-receive-pack'
+  :read
+when 'git-upload-pack'
+  :write
+else
+  abort "No command"
+end
+
+repo.sub!(/^\'/, '')
+repo.sub!(/\'$/, '')
+repo = repo[1..-1] if repo[0] == ?/
+
+base = "/Users/tim/Projects/git-hosting/base"
+path = File.expand_path("#{base}/#{repo}")
+abort "HAX" unless path[0..base.length-1] == base
+logger.debug "path: #{path.inspect}"
+print `/opt/local/bin/#{command} #{path}`
